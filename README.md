@@ -1,164 +1,54 @@
-# An Ansible module to talk with OVH API
+# OVH collection for Ansible
 
-## Requirements
+The OVH collection includes a variety of Ansible modules to help automate the management of OVH resources through API calls.
 
-Tested with:
+## Ansible version compatibility
 
-- Python 3.7
-- [Python-ovh 0.5](https://github.com/ovh/python-ovh)
-- Ansible 2.9+
+This collection has been tested against following Ansible versions: >=2.12.4.
 
-## Collection
+Plugins and modules within a collection may be tested with only specific Ansible versions. A collection may contain metadata that identifies these versions. PEP440 is the schema used to describe the versions of Ansible.
 
-This module can be [installed as a collection](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#installing-a-collection-from-a-git-repository)
+## Python version compatibility
 
-```shell
-ansible-galaxy collection install git+https://github.com/synthesio/infra-ovh-ansible-module
-```
+This collection requires Python 3.6 or greater.
 
-This collection provides the following modules:
 
-```text
-dedicated_server_boot
-dedicated_server_display_name
-dedicated_server_info
-dedicated_server_install
-dedicated_server_install_wait
-dedicated_server_monitoring
-dedicated_server_networkinterfacecontroller
-dedicated_server_terminate
-dedicated_server_vrack
-domain
-installation_template
-ip_reverse
-public_cloud_flavorid_info
-public_cloud_imageid_info
-public_cloud_instance_info
-public_cloud_instance
-public_cloud_instance_delete
-public_cloud_monthly_billing
-public_cloud_block_storage_instance
-public_cloud_block_storage
-```
+## Installing this collection
 
-You can read the documentation of every modules with `ansible-doc synthesio.ovh.$modules`
+You can install the mgdis.ovh collection with the Ansible Galaxy CLI:
 
-An example for a custom template to install a dedicated server is present in `roles/ovhtemplate` folder
+    ansible-galaxy collection install mgdis.ovh
 
-## Upgrade from synthesio.ovh < 5.0.0
-
-Before version 5.0.0 of the collection, all tasks were in the same `synthesio.ovh.ovh` module !
-Since 5.0.0, the collection has been rewritten: it is now split into multiple modules, which is easier to maintain, enhance, debug,
-and more ansible collection compliant.
-
-If you are upgrading from 4.0.0 and earlier, please read the doc and update your playbooks !
-
-## Configuration
-
-The collection path must be defined in your `ansible.cfg` :
-
-```ini
-[defaults]
-collections_paths = collections/
-```
-
-In `/etc/ovh.conf`:
-
-```ini
-[default]
-; general configuration: default endpoint
-endpoint=ovh-eu
-
-[ovh-eu]
-; configuration specific to 'ovh-eu' endpoint
-application_key=<YOUR APPLICATION KEY>
-application_secret=<YOUR APPLICATIOM SECRET>
-consumer_key=<YOUR CONSUMER KEY>
-```
-
-Alternatively, you can provide credentials as module attributes:
+You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
 
 ```yaml
-- name: Add server to vrack
-  synthesio.ovh.dedicated_server_vrack:
-    endpoint: "ovh-eu"
-    application_key: "<YOUR APPLICATION KEY>"
-    application_secret: "<YOUR APPLICATIOM SECRET>"
-    consumer_key: "<YOUR CONSUMER KEY>"
-    vrack: "{{ vrackid }}"
-    service_name: "{{ ovhname }}"
-```
-
-This allows you to store them in Ansible vault or to use any lookup plugin to retrieve them.
-
-## Usage
-
-Here are a few examples of what you can do. Please read the module for everything else, it most probably does it!
-
-As this is a collection now you must declare it in each task.
-
-A few examples:
-
-### Add a host into the vrack
-
-```yaml
-- name: Add server to vrack
-  synthesio.ovh.dedicated_server_vrack:
-    service_name: "{{ ovhname }}"
-    vrack: "{{ vrackid }}"
-```
-
-### Add a DNS entry for `internal.bar.example.com`
-
-```yaml
-- name: Add server IP to DNS
-  synthesio.ovh.domain:
-    domain: "example.com"
-    value: "192.0.2.1"
-    record_type: "A"
-    name: "internal.bar"
-    record_ttl: 10
+---
+collections:
+  - name: mgdis.ovh
 
 ```
 
-### Install a new dedicated server
+A specific version of the collection can be installed by using the `version` keyword in the `requirements.yml` file:
 
 ```yaml
-- Install new dedicated server
-  synthesio.ovh.dedicated_server_install:
-    service_name: "ns12345.ip-1-2-3.eu"
-    hostname: "server01.example.net"
-    template: "debian10_64"
-
-- name: Wait for the server installation
-  synthesio.ovh.dedicated_server_install_wait:
-    service_name: "ns12345.ip-1-2-3.eu"
-    max_retry: "240"
-    sleep: "10"
+---
+collections:
+  - name: mgdis.ovh
+    version: 0.1.0
 ```
 
-### Install a new dedicated server with only 2 disks
+You can either call modules by their Fully Qualified Collection Namespace (FQCN), such as `mgdis.ovh.db_cluster_info`, or you can call modules by their short name if you list the `mgdis.ovh` collection in the playbook's `collections` keyword:
 
 ```yaml
-- Install new dedicated server
-  synthesio.ovh.dedicated_server_install:
-    service_name: "ns12345.ip-1-2-3.eu"
-    hostname: "server01.example.net"
-    template: "debian10_64"
-    soft_raid_devices: "2"
-
-```
-
-### Install a public cloud instance
-
-```yaml
-- name: run a public cloud installation
-  synthesio.ovh.public_cloud_instance:
-    name: "{{ inventory_hostname }}"
-    ssh_key_id: "{{ ssh_key_id }}"
+---
+- name: Get cluster info
+  mgdis.ovh.db_cluster_info:
+    endpoint: "{{ endpoint }}"
+    application_key: "{{ application_key }}"
+    application_secret: "{{ application_secret }}"
+    consumer_key: "{{ consumer_key }}"
     service_name: "{{ service_name }}"
-    networks: "{{ networks }}"
-    flavor_id: "{{ flavor_id }}"
-    region: "{{ region }}"
-    image_id: "{{ image_id }}"
+    db_type: "{{ db_type }}"
+    cluster_id: "{{ item.cluster_id }}"
+
 ```
