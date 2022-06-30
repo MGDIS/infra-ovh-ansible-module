@@ -66,16 +66,13 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
     service_name = module.params['service_name']
     max_retry = module.params['max_retry']
     sleep = module.params['sleep']
-
-    if module.check_mode:
-        module.exit_json(msg="done - (dry run mode)", changed=False)
 
     for i in range(1, int(max_retry)):
         # Messages cannot be displayed in real time (yet)

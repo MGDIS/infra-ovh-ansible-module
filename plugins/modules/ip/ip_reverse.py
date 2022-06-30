@@ -76,7 +76,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -93,9 +93,6 @@ def run_module():
             ip_block = urllib.parse.quote(ip_block, safe='')
         else:
             module.fail_json(msg="IP {} not in IP block {}".format(ip, ip_block))
-
-    if module.check_mode:
-        module.exit_json(msg="Reverse {} to {} succesfully set ! - (dry run mode)".format(ip, reverse), changed=True)
 
     result = {}
     try:

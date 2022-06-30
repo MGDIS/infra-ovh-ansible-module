@@ -65,7 +65,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -75,10 +75,6 @@ def run_module():
     changed = False
 
     bootid = {'harddisk': 1, 'rescue': 1122}
-    if module.check_mode:
-        module.exit_json(
-            msg="{} is now set to boot on {}. Reboot in progress... - (dry run mode)".format(service_name, boot),
-            changed=False)
 
     try:
         check = client.get(

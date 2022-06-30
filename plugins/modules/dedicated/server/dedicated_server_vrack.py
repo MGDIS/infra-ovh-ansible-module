@@ -60,19 +60,13 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
     service_name = module.params['service_name']
     vrack = module.params['vrack']
     state = module.params['state']
-
-    if module.check_mode:
-        module.exit_json(
-            msg="{} succesfully {} on {} - (dry run mode)".format(
-                service_name, state, vrack),
-            changed=True)
 
     try:
         # There is no easy way to know if the server is

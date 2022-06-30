@@ -109,7 +109,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -119,10 +119,7 @@ def run_module():
     record_type = module.params['record_type']
     state = module.params['state']
     ttl = module.params['ttl']
-
-    if module.check_mode:
-        module.exit_json(msg="{} set to {}.{} ! - (dry run mode)".format(target, name, domain))
-
+    
     try:
         available_domains = client.get('/domain/zone')
         if domain not in available_domains:

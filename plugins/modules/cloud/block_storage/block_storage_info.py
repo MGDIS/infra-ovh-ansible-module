@@ -76,17 +76,13 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
     service_name = module.params['service_name']
     name = module.params['name']
     region = module.params['region']
-
-    #if module.check_mode:
-    #    module.exit_json(msg="Ensure volume id {} is {} on instance id {} - (dry run mode)".format(volume_id, state, instance_id),
-    #                     changed=True)
 
     volume_list = []
     volume_id = ""

@@ -56,7 +56,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -67,9 +67,6 @@ def run_module():
         monitoring_bool = True
     elif state == 'absent':
         monitoring_bool = False
-
-    if module.check_mode:
-        module.exit_json(msg="Monitoring is now {} for {} - (dry run mode)".format(state, service_name), changed=True)
 
     try:
         server_state = client.get('/dedicated/server/%s' % service_name)

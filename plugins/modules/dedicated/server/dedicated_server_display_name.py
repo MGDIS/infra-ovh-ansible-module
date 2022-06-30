@@ -54,15 +54,12 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
     display_name = module.params['display_name']
     service_name = module.params['service_name']
-
-    if module.check_mode:
-        module.exit_json(msg="display_name has been set to {} ! - (dry run mode)".format(display_name), changed=True)
 
     try:
         result = client.get('/dedicated/server/%s/serviceInfos' % service_name)

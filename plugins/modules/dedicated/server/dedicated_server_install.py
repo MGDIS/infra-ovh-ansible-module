@@ -66,7 +66,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -75,10 +75,6 @@ def run_module():
     template = module.params['template']
     ssh_key_name = module.params['ssh_key_name']
     soft_raid_devices = module.params['soft_raid_devices']
-
-    if module.check_mode:
-        module.exit_json(msg="Installation in progress on {} as {} with template {} - (dry run mode)".format(service_name, hostname, template),
-                         changed=True)
 
     try:
         compatible_templates = client.get(

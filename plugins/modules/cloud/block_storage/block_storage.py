@@ -164,7 +164,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -187,15 +187,6 @@ def run_module():
 
     instance_list = []
     instance_id = ""
-
-    #if module.check_mode:
-    #    module.exit_json(msg="Ensure volume id {} is {} on instance id {} - (dry run mode)".format(
-    #                        volume_id,
-    #                        state,
-    #                        instance_id
-    #                        ),
-    #                    changed=True
-    #                    )
 
     try:
         volume_list = client.get('/cloud/project/%s/volume' % service_name, region=region)

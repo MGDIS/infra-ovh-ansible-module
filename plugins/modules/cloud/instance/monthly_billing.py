@@ -68,16 +68,13 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
 
     client = ovh_api_connect(module)
 
     service_name = module.params['service_name']
     instance_name = module.params['name']
-
-    if module.check_mode:
-        module.exit_json(msg="Monthly Billing enabled on {} ! - (dry run mode)".format(instance_id), changed=True)
 
     try:
         result = client.get('/cloud/project/%s/instance/%s' % (service_name, instance_id))

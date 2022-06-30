@@ -60,7 +60,7 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
@@ -69,9 +69,6 @@ def run_module():
     service_name = module.params['service_name']
     # The action plugin resolve the "template" variable path. So we need to re-extract the basename
     src_template = os.path.basename(template)
-
-    if module.check_mode:
-        module.exit_json(msg="template {} is now {} - dry run mode".format(template, state))
 
     try:
         template_list = client.get(

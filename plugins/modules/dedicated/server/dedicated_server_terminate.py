@@ -47,14 +47,11 @@ def run_module():
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=True
+        supports_check_mode=False
     )
     client = ovh_api_connect(module)
 
     service_name = module.params['service_name']
-
-    if module.check_mode:
-        module.exit_json(changed=True, msg="Terminate {} is done, please confirm via the email sent - (dry run mode)".format(service_name))
 
     try:
         client.post(
