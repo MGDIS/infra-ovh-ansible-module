@@ -43,12 +43,12 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
 ---
 - name: Get cluster info
   mgdis.ovh.db_cluster_info:
-    endpoint: "{{ endpoint }}"
-    application_key: "{{ application_key }}"
-    application_secret: "{{ application_secret }}"
-    consumer_key: "{{ consumer_key }}"
-    service_name: "{{ service_name }}"
-    db_type: "{{ db_type }}"
-    cluster_id: "{{ item.cluster_id }}"
+    endpoint: "ovh-eu"
+    application_key: "<application key>"
+    application_secret: "<application secret>"
+    consumer_key: "<consumer key>"
+    service_name: "abcdefghijklmnopqrstuvwxyz012345"
+    db_type: "mongodb"
+    cluster_id: "myClusterName"
 
 ```
