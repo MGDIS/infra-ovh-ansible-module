@@ -11,14 +11,14 @@ tags:
 - cloud
 - ovh
 # The URL of the originating SCM repository
-repository: http://example.com/repository
+repository: https://github.com/MGDIS/infra-ovh-ansible-module
 
 # The URL to any online docs
-documentation: http://docs.example.com
+documentation: https://github.com/MGDIS/infra-ovh-ansible-module
 
 # The URL to the homepage of the collection/project
-homepage: http://example.com
+homepage: https://github.com/MGDIS/infra-ovh-ansible-module
 
 # The URL to the collection issue tracker
-issues: http://example.com/issue/tracker
+issues: https://github.com/MGDIS/infra-ovh-ansible-module/issues
 
