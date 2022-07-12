@@ -52,3 +52,19 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
     cluster_id: "myClusterName"
 
 ```
+## Included content
+
+### Modules
+- mgdis.ovh.block_storage
+- mgdis.ovh.block_storage_info
+- mgdis.ovh.db_cluster
+- mgdis.ovh.db_cluster_info
+- mgdis.ovh.db_cluster_ip_restriction
+- mgdis.ovh.db_cluster_user
+- mgdis.ovh.flavor_info
+- mgdis.ovh.image_info
+- mgdis.ovh.instance_info
+- mgdis.ovh.instance
+- mgdis.ovh.monthly_billing
+- mgdis.ovh.ip_reverse
+- mgdis.ovh.domain
