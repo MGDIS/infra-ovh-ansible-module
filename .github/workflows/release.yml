@@ -23,4 +23,4 @@ jobs:
       - name: Deploy Ansible collection to Galaxy
         env:
           ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
-        run: ansible-galaxy collection publish mgdis-ovh-$VERSION.tar.gz --api-key $ANSIBLE_GALAXY_API_KEY
+        run: ansible-galaxy collection publish mgdis-ovh-$VERSION.tar.gz --api-key "$ANSIBLE_GALAXY_API_KEY"
