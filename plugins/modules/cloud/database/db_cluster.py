@@ -167,7 +167,7 @@ def run_module():
                     "root['minDiskSize']",
                     "root['maxDiskSize']",
                     "root['status']"
-                 ]
+                ]
             )
             if not diff:
                 available = True

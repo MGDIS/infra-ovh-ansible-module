@@ -65,15 +65,15 @@ def run_module():
         service_name=dict(
             type='str',
             required=True
-            ),
+        ),
         name=dict(
             type='str',
             required=True
-            ),
+        ),
         region=dict(
             type='str',
             required=True
-            )
+        )
     ))
 
     module = AnsibleModule(
@@ -99,7 +99,7 @@ def run_module():
         module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
 
     try:
-        snpashot_list = client.get('/cloud/project/%s/snapshot' % (service_name), region=region)
+        snapshot_list = client.get('/cloud/project/%s/snapshot' % (service_name), region=region)
         for snapshot in snapshot_list:
             if snapshot['name'] == name:
                 try:

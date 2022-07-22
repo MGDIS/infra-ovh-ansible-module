@@ -58,11 +58,11 @@ def run_module():
         service_name=dict(
             type='str',
             required=True
-            ),
+        ),
         name=dict(
             type='str',
             required=True
-            )
+        )
     ))
 
     module = AnsibleModule(

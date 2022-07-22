@@ -21,7 +21,7 @@ requirements:
 
 options:
     domain:
-        description: 
+        description:
             - The targeted domain
         required: true
         type: str
@@ -82,25 +82,25 @@ def run_module():
         domain=dict(
             type='str',
             required=True
-            ),
+        ),
         target=dict(
             type='str',
             required=True
-            ),
+        ),
         name=dict(
             type='str',
             required=True
-            ),
+        ),
         record_type=dict(
             type='str',
-            choices=['A', 'AAAA', 'CAA', 'CNAME', 'DKIM', 'DMARC', 'DNAME', 'LOC', 'MX', 'NAPTR', 'NS', 'PTR', 'SPF', 'SRV', 'SSHFP', 'TLSA', 'TXT'], 
+            choices=['A', 'AAAA', 'CAA', 'CNAME', 'DKIM', 'DMARC', 'DNAME', 'LOC', 'MX', 'NAPTR', 'NS', 'PTR', 'SPF', 'SRV', 'SSHFP', 'TLSA', 'TXT'],
             default='A'
-            ),
+        ),
         state=dict(
             type='str',
             choices=['present', 'absent'],
             default='present'
-            ),
+        ),
         ttl=dict(
             type='int',
             required=False
@@ -119,7 +119,7 @@ def run_module():
     record_type = module.params['record_type']
     state = module.params['state']
     ttl = module.params['ttl']
-    
+
     try:
         available_domains = client.get('/domain/zone')
         if domain not in available_domains:
@@ -154,7 +154,7 @@ def run_module():
                             subDomain=name,
                             target=target,
                             ttl=ttl
-                            )
+                        )
                         client.post(
                             '/domain/zone/%s/refresh' % domain
                         )

@@ -13,8 +13,12 @@ def ovh_api_connect(module):
     if not HAS_OVH:
         module.fail_json(msg='Python module python-ovh is required')
 
-    credential_keys = ['endpoint', 'application_key',
-                   'application_secret', 'consumer_key']
+    credential_keys = [
+        'endpoint',
+        'application_key',
+        'application_secret',
+        'consumer_key'
+    ]
     credential_parameters = [
         cred in module.params for cred in credential_keys]
     try:

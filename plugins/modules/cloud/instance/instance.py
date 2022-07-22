@@ -100,28 +100,28 @@ def run_module():
         name=dict(
             type='str',
             required=True
-            ),
+        ),
         flavor_name=dict(
             type='str',
             required=True
-            ),
+        ),
         image_name=dict(
             type='str',
             required=True
-            ),
+        ),
         service_name=dict(
             type='str',
             required=True
-            ),
+        ),
         ssh_key_name=dict(
             type='str',
             required=False,
             default=None
-            ),
+        ),
         region=dict(
             type='str',
             required=True
-            ),
+        ),
         networks=dict(
             type='list',
             default=[],
@@ -136,16 +136,16 @@ def run_module():
                     required=False
                 )
             )
-            ),
+        ),
         monthly_billing=dict(
             type='bool',
             default=False
-            ),
+        ),
         state=dict(
             type=str,
             choices=['present', 'absent'],
             default='present'
-            )
+        )
     ))
 
     module = AnsibleModule(
@@ -177,8 +177,10 @@ def run_module():
     for instance in instances_list:
         if instance['name'] == name:
             if state == "present":
-                module.exit_json(changed=False,
-                                msg="Instance {} [{}] in region {} is already installed".format(name, instance_id, region))
+                module.exit_json(
+                    changed=False,
+                    msg="Instance {} [{}] in region {} is already installed".format(name, instance_id, region)
+                )
             else:
                 client.delete('/cloud/project/%s/instance/%s' % (service_name, instance['id']))
                 module.exit_json(msg="Instance {} deleted".format(name), changed=True)

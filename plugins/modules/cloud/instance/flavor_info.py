@@ -64,15 +64,15 @@ def run_module():
         service_name=dict(
             type='str',
             required=True
-            ),
+        ),
         name=dict(
             type='str',
             required=True
-            ),
+        ),
         region=dict(
             type='str',
             required=True
-            )
+        )
     ))
 
     module = AnsibleModule(
