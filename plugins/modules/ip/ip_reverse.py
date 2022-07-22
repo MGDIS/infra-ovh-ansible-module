@@ -48,7 +48,8 @@ mgdis.ovh.reverse_dns:
 RETURN = ''' # '''
 
 from ansible_collections.mgdis.ovh.plugins.module_utils.ovh import ovh_api_connect, ovh_argument_spec
-import urllib.parse, ipaddress
+import urllib.parse
+import ipaddress
 
 try:
     from ovh.exceptions import APIError, ResourceNotFoundError
@@ -63,15 +64,15 @@ def run_module():
         ip=dict(
             type='str',
             required=True
-            ),
+        ),
         domain_name=dict(
             type='str',
             required=True
-            ),
+        ),
         ip_block=dict(
             type='str',
             required=False, default=None
-            )
+        )
     ))
 
     module = AnsibleModule(

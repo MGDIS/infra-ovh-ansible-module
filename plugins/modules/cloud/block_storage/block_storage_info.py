@@ -100,7 +100,7 @@ def run_module():
                 module.exit_json(changed=True, **volume_details)
             except APIError as api_error:
                 module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
-    
+
     # TO DO Add instance info
 
 

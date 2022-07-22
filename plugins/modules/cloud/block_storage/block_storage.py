@@ -156,7 +156,7 @@ def run_module():
         ),
         state=dict(
             type='str',
-            choices=['present','absent','attach','detach'],
+            choices=['present', 'absent', 'attach', 'detach'],
             default='present',
             required=False
         )
@@ -180,7 +180,6 @@ def run_module():
     upsize = module.params['upsize']
     state = module.params['state']
 
-    
     volume_list = []
     volume_id = ""
     volume_details = {}
@@ -208,7 +207,8 @@ def run_module():
                     module.fail_json(msg="Cannot downsize a block storage")
                 else:
                     try:
-                        client.post('/cloud/project/%s/volume/%s/upsize' % (service_name, volume_id),
+                        client.post(
+                            '/cloud/project/%s/volume/%s/upsize' % (service_name, volume_id),
                             size=size
                         )
                     except APIError as api_error:
