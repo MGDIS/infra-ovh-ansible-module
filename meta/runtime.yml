@@ -1,0 +1,30 @@
+---
+requires_ansible: '>=2.12.4'
+plugin_routing:
+  modules:
+    block_storage:
+      redirect: mgdis.ovh.cloud.block_storage.block_storage
+    block_storage_info:
+      redirect: mgdis.ovh.cloud.block_storage.block_storage_info
+    db_cluster:
+      redirect: mgdis.ovh.cloud.database.db_cluster
+    db_cluster_info:
+      redirect: mgdis.ovh.cloud.database.db_cluster_info
+    db_cluster_ip_restriction:
+      redirect: mgdis.ovh.cloud.database.db_cluster_ip_restriction
+    db_cluster_user:
+      redirect: mgdis.ovh.cloud.database.db_cluster_user
+    flavor_info:
+      redirect: mgdis.ovh.cloud.instance.flavor_info
+    image_info:
+      redirect: mgdis.ovh.cloud.instance.image_info
+    instance_info:
+      redirect: mgdis.ovh.cloud.instance.instance_info
+    instance:
+      redirect: mgdis.ovh.cloud.instance.instance
+    monthly_billing:
+      redirect: mgdis.ovh.cloud.instance.monthly_billing
+    ip_reverse:
+      redirect: mgdis.ovh.ip.ip_reverse
+    domain:
+      redirect: mgdis.ovh.domain.domain
