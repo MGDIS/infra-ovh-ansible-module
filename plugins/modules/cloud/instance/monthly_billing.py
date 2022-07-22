@@ -86,7 +86,7 @@ def run_module():
         module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
 
     for instance in instances_list:
-        if instance['name'] == name:
+        if instance['name'] == instance_name:
             instance_id = instance["id"]
 
     if not instance_id:
