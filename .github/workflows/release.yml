@@ -10,7 +10,7 @@ env:
 jobs:
   buildandpublish:
     runs-on: ubuntu-latest
-    name: Lint
+    name: Release
     steps:
       - name: Check out source repository
         uses: actions/checkout@v2
@@ -21,4 +21,6 @@ jobs:
       - name: Build Ansible Collection
         run: ansible-galaxy collection build
       - name: Deploy Ansible collection to Galaxy
-        run: ansible-galaxy collection publish mgdis-ovh-$VERSION.tar.gz --api-key ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+        env:
+          ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+        run: ansible-galaxy collection publish mgdis-ovh-$VERSION.tar.gz --api-key $ANSIBLE_GALAXY_API_KEY
