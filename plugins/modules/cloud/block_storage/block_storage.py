@@ -225,12 +225,13 @@ def run_module():
 
                 if instance_id in volume_details["attachedTo"]:
                     module.exit_json(
-                    msg="Block storage {} already exists and attached to {}".format(name, instance_name),
-                    changed=False
+                        msg="Block storage {} already exists and attached to {}".format(name, instance_name),
+                        changed=False
                     )
                 else:
                     try:
-                        result = client.post('/cloud/project/%s/volume/%s/attach' % (service_name, volume_id),
+                        result = client.post(
+                            '/cloud/project/%s/volume/%s/attach' % (service_name, volume_id),
                             instanceId=instance_id
                         )
                         module.exit_json(changed=True, **result)
@@ -245,7 +246,8 @@ def run_module():
             if volume_details["attachedTo"]:
                 for instance in volume_details["attachedTo"]:
                     try:
-                        detach = client.post('/cloud/project/%s/volume/%s/detach' % (service_name, volume_id),
+                        detach = client.post(
+                            '/cloud/project/%s/volume/%s/detach' % (service_name, volume_id),
                             instanceId=instance
                         )
                         while detach["status"] == "detaching":
@@ -317,7 +319,8 @@ def run_module():
                     if instance['name'] == instance_name:
                         instance_id = instance['id']
                 try:
-                    attach = client.post('/cloud/project/%s/volume/%s/attach' % (service_name, result["id"]),
+                    attach = client.post(
+                        '/cloud/project/%s/volume/%s/attach' % (service_name, result["id"]),
                         instanceId=instance_id
                     )
                     module.exit_json(changed=True, **attach)

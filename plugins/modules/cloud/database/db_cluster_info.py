@@ -15,7 +15,7 @@ version_added: "0.1.0"
 
 description:
     - This module retrieves all info of a managed database cluster.
-    
+
 requirements:
     - ovh >= 0.5.0
 
@@ -78,7 +78,7 @@ def run_module():
     service_name = module.params['service_name']
     cluster_name = module.params['name']
     db_type = module.params['type']
-    
+
     info = ""
 
     try:
@@ -97,8 +97,6 @@ def run_module():
         module.exit_json(changed=False, **info)
     else:
         module.fail_json(msg="Cluster {} not found for database_type {}".format(cluster_name, db_type))
-
-    
 
 
 def main():

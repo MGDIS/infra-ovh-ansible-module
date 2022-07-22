@@ -75,7 +75,7 @@ def run_module():
             type='str',
             required=True,
             choices=['kafka', 'mongodb', 'mysql', 'opensearch', 'postgresql', 'redis']
-            ),
+        ),
         ip_blocks=dict(
             type='list',
             required=True,
@@ -120,8 +120,8 @@ def run_module():
         module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
 
     if not cluster_id:
-        module.fail_json(msg="Cluster {0} not found".format(name))
-        
+        module.fail_json(msg="Cluster {0} not found".format(cluster_name))
+
     try:
         restrictions = client.get('/cloud/project/%s/database/%s/%s/ipRestriction' % (service_name, db_type, cluster_id))
         for ip_block in ip_blocks:
@@ -131,11 +131,11 @@ def run_module():
     except APIError as api_error:
         module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
 
-
     if ip_added:
         module.exit_json(changed=True)
     else:
         module.exit_json(changed=False)
+
 
 def main():
     run_module()

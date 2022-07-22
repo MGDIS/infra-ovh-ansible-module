@@ -18,7 +18,7 @@ description:
 
 requirements:
     - ovh >= 0.5.0
-    
+
 options:
     service_name:
         description:
@@ -104,7 +104,7 @@ def run_module():
             type='str',
             required=True,
             choices=['kafka', 'mongodb', 'mysql', 'opensearch', 'postgresql', 'redis']
-            ),
+        ),
         version=dict(type='str', required=True),
         flavor=dict(type='str', required=True),
         region=dict(type='str', required=True),
@@ -149,7 +149,7 @@ def run_module():
             "region": region,
             "flavor": flavor,
             "network": network
-            }
+        }
 
         for offer in availability:
             diff = DeepDiff(
@@ -157,24 +157,31 @@ def run_module():
                 to_check,
                 ignore_string_case=True,
                 exclude_paths=[
-                "root['default']",
-                "root['startDate']",
-                "root['endOfLife']",
-                "root['upstreamEndOfLife']",
-                "root['backup']",
-                "root['minNodeNumber']",
-                "root['maxNodeNumber']",
-                "root['minDiskSize']",
-                "root['maxDiskSize']",
-                "root['status']"
-                    ]
-                )
+                    "root['default']",
+                    "root['startDate']",
+                    "root['endOfLife']",
+                    "root['upstreamEndOfLife']",
+                    "root['backup']",
+                    "root['minNodeNumber']",
+                    "root['maxNodeNumber']",
+                    "root['minDiskSize']",
+                    "root['maxDiskSize']",
+                    "root['status']"
+                 ]
+            )
             if not diff:
                 available = True
                 nb_nodes = offer["minNodeNumber"]
                 break
         if not available:
-            msg = "Failed to find availability for cluster with parameters : engine: %s, version: %s, plan: %s, region: %s, flavor: %s, network: %s" % (db_type, version, plan, region, flavor, network)
+            msg = "Cluster with parameters : engine: %s, version: %s, plan: %s, region: %s, flavor: %s, network: %s not available" % (
+                db_type,
+                version,
+                plan,
+                region,
+                flavor,
+                network
+            )
             module.fail_json(msg=msg)
     except APIError as api_error:
         module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
