@@ -169,8 +169,10 @@ def run_module():
     ssh_key_id = ''
 
     try:
-        instances_list = client.get('/cloud/project/%s/instance' % (service_name),
-                                    region=region)
+        instances_list = client.get(
+            '/cloud/project/%s/instance' % (service_name),
+            region=region
+        )
     except APIError as api_error:
         module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
 
@@ -179,7 +181,7 @@ def run_module():
             if state == "present":
                 module.exit_json(
                     changed=False,
-                    msg="Instance {} [{}] in region {} is already installed".format(name, instance_id, region)
+                    msg="Instance {} [{}] in region {} is already installed".format(name, instance["id"], region)
                 )
             else:
                 client.delete('/cloud/project/%s/instance/%s' % (service_name, instance['id']))

@@ -76,6 +76,22 @@ def run_module():
     service_name = module.params['service_name']
     instance_name = module.params['name']
 
+    instance_id = ''
+
+    try:
+        instances_list = client.get(
+            '/cloud/project/%s/instance' % (service_name)
+        )
+    except APIError as api_error:
+        module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
+
+    for instance in instances_list:
+        if instance['name'] == name:
+            instance_id = instance["id"]
+
+    if not instance_id:
+        module.fail_json(msg="Instance {} does not exist".format(instance_name))
+
     try:
         result = client.get('/cloud/project/%s/instance/%s' % (service_name, instance_id))
         if result['monthlyBilling'] is not None and result['monthlyBilling']['status'] == "ok":
