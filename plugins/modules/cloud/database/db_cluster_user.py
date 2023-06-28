@@ -132,10 +132,10 @@ def run_module():
     cluster_name = module.params['name']
     service_name = module.params['service_name']
     db_type = module.params['type']
-    username=module.params['username']
-    password=module.params['password']
-    roles=module.params['roles']
-    state=module.params['state']
+    username = module.params['username']
+    password = module.params['password']
+    roles = module.params['roles']
+    state = module.params['state']
 
     user = ""
     cluster_id = ""
