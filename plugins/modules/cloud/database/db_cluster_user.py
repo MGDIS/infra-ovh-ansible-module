@@ -18,7 +18,7 @@ description:
 
 requirements:
     - ovh >= 0.5.0
-
+    
 options:
     service_name:
         description:
@@ -45,7 +45,7 @@ options:
     password:
         description:
             - Password of the user to create or update
-        required: true
+        required: false
         type: str
     roles:
         description:
@@ -74,14 +74,30 @@ mgdis.ovh.db_cluster_user:
 RETURN = ''' # '''
 
 from ansible_collections.mgdis.ovh.plugins.module_utils.ovh import ovh_api_connect, ovh_argument_spec
-import re
+import re, time
 
 try:
-    from ovh.exceptions import APIError
+    from ovh.exceptions import APIError, ResourceConflictError
     HAS_OVH = True
 except ImportError:
     HAS_OVH = False
 
+def get_userid(module, client, details, service_name, db_type, cluster_id):
+    user = ""
+    try:
+        user_ids = client.get(
+            '/cloud/project/%s/database/%s/%s/user' % (service_name, db_type, cluster_id)
+            )
+        for user_id in user_ids:
+            u = client.get(
+                '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user_id)
+                )
+            if details["name"] == re.sub("@.+", "", u["username"]): # Todo split u["username"] for better comparison
+                user = user_id
+                break
+    except APIError as api_error:
+        module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
+    return user
 
 def run_module():
     module_args = ovh_argument_spec()
@@ -92,7 +108,7 @@ def run_module():
             type='str',
             required=True,
             choices=['kafka', 'mongodb', 'mysql', 'opensearch', 'postgresql', 'redis']
-        ),
+            ),
         username=dict(type='str', required=True),
         password=dict(type='str', required=False, no_log=True),
         roles=dict(type='list', element='str', required=False),
@@ -101,29 +117,29 @@ def run_module():
             required=False,
             choices=['present', 'absent', 'reset'],
             default='present'
-        )
+            )
     ))
 
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=False
+        supports_check_mode=True
     )
     client = ovh_api_connect(module)
 
     cluster_name = module.params['name']
     service_name = module.params['service_name']
     db_type = module.params['type']
-    username = module.params['username']
-    password = module.params['password']
-    roles = module.params['roles']
-    state = module.params['state']
+    username=module.params['username']
+    password=module.params['password']
+    roles=module.params['roles']
+    state=module.params['state']
 
     user = ""
     cluster_id = ""
+    status = "PENDING"
 
     details = {
         "name": username,
-        "password": password,
         "roles": roles
     }
 
@@ -142,23 +158,26 @@ def run_module():
     if not cluster_id:
         module.fail_json(msg="Cluster {0} not found".format(cluster_name))
 
-    try:
-        user_ids = client.get(
-            '/cloud/project/%s/database/%s/%s/user' % (service_name, db_type, cluster_id)
-        )
-        for user_id in user_ids:
-            u = client.get(
-                '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user_id)
-            )
-            if details["name"] == re.sub("@.+", "", u["username"]):  # Todo split u["username"] for better comparison
-                user = user_id
-                break
-    except APIError as api_error:
-        module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
+    #try:
+    #    user_ids = client.get(
+    #        '/cloud/project/%s/database/%s/%s/user' % (service_name, db_type, cluster_id)
+    #        )
+    #    for user_id in user_ids:
+    #        u = client.get(
+    #            '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user_id)
+    #            )
+    #        if details["name"] == re.sub("@.+", "", u["username"]): # Todo split u["username"] for better comparison
+    #            user = user_id
+    #            break
+    #except APIError as api_error:
+    #    module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
+
+    user = get_userid(module, client, details, service_name, db_type, cluster_id)
 
     if state == 'present':
         if user:
             details.pop("name")
+            details["password"] = password
             try:
                 client.put(
                     '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user),
@@ -173,6 +192,28 @@ def run_module():
                     '/cloud/project/%s/database/%s/%s/user' % (service_name, db_type, cluster_id),
                     **details
                 )
+                if password:
+                    user = get_userid(module, client, details, service_name, db_type, cluster_id)
+                    while status != 'READY':
+                        time.sleep(2)
+                        try:
+                            u = client.get(
+                                '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user)
+                            )
+                            if details["name"] == re.sub("@.+", "", u["username"]):
+                                status = u["status"]
+                        except APIError as api_error:
+                            module.fail_json(msg="Failed to call OVH API0: {0}".format(api_error))
+                    try:
+                        details.pop("name")
+                        details.update({'password': password})
+                        client.put(
+                            '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user),
+                            **details
+                        )
+                        module.exit_json(changed=True)
+                    except APIError as api_error:
+                        module.fail_json(msg="Failed to call OVH API1: {0}".format(api_error))
                 module.exit_json(changed=True)
             except APIError as api_error:
                 module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
@@ -198,6 +239,7 @@ def run_module():
                 module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
         else:
             module.fail_json(msg="User not found")
+
 
 
 def main():
