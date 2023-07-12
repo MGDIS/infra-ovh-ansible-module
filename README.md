@@ -1,5 +1,6 @@
 # OVH collection for Ansible
 
+
 The OVH collection includes a variety of Ansible modules to help automate the management of OVH resources through API calls.
 
 ## Ansible version compatibility
