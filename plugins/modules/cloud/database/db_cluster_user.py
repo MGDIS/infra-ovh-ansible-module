@@ -42,11 +42,6 @@ options:
             - Username of the user to create or update
         required: true
         type: str
-    password:
-        description:
-            - Password of the user to create or update
-        required: false
-        type: str
     roles:
         description:
             - The roles to associate with the user
@@ -66,7 +61,6 @@ mgdis.ovh.db_cluster_user:
   name: myClusterName
   type: mongodb
   username: test
-  password: test
   roles: dbAdmin
   state: present
 '''
@@ -113,7 +107,6 @@ def run_module():
             choices=['kafka', 'mongodb', 'mysql', 'opensearch', 'postgresql', 'redis']
         ),
         username=dict(type='str', required=True),
-        password=dict(type='str', required=False, no_log=True),
         roles=dict(type='list', element='str', required=False),
         state=dict(
             type='str',
@@ -133,7 +126,6 @@ def run_module():
     service_name = module.params['service_name']
     db_type = module.params['type']
     username = module.params['username']
-    password = module.params['password']
     roles = module.params['roles']
     state = module.params['state']
 
@@ -165,44 +157,26 @@ def run_module():
 
     if state == 'present':
         if user:
-            details.pop("name")
-            details["password"] = password
+            while status != 'READY':
+                time.sleep(2)
+                try:
+                    u = client.get(
+                        '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user)
+                    )
+                    if details["name"] == re.sub("@.+", "", u["username"]):
+                        status = u["status"]
+                        for actualRole in u["roles"]:
+                            if actualRole not in roles:
+                                roles.append(actualRole)
+                except APIError as api_error:
+                    module.fail_json(msg="Failed to call OVH API0: {0}".format(api_error))
             try:
+                details.pop("name")
+                details["roles"] = roles
                 client.put(
                     '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user),
                     **details
                 )
-                module.exit_json(changed=True)
-            except APIError as api_error:
-                module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
-        else:
-            try:
-                client.post(
-                    '/cloud/project/%s/database/%s/%s/user' % (service_name, db_type, cluster_id),
-                    **details
-                )
-                if password:
-                    user = get_userid(module, client, details, service_name, db_type, cluster_id)
-                    while status != 'READY':
-                        time.sleep(2)
-                        try:
-                            u = client.get(
-                                '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user)
-                            )
-                            if details["name"] == re.sub("@.+", "", u["username"]):
-                                status = u["status"]
-                        except APIError as api_error:
-                            module.fail_json(msg="Failed to call OVH API0: {0}".format(api_error))
-                    try:
-                        details.pop("name")
-                        details.update({'password': password})
-                        client.put(
-                            '/cloud/project/%s/database/%s/%s/user/%s' % (service_name, db_type, cluster_id, user),
-                            **details
-                        )
-                        module.exit_json(changed=True)
-                    except APIError as api_error:
-                        module.fail_json(msg="Failed to call OVH API1: {0}".format(api_error))
                 module.exit_json(changed=True)
             except APIError as api_error:
                 module.fail_json(msg="Failed to call OVH API: {0}".format(api_error))
